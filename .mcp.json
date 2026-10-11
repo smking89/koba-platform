@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "blender-orchestrator": {
-      "command": "/home/koba/Desktop/blender-orchestrator/.venv/bin/blender-mcp",
-      "args": []
-    }
-  }
-}
