@@ -24,9 +24,12 @@ with its own separate scope and its own `ROADMAP.md` — it does not belong in
 the koba-platform umbrella and has been removed from this document entirely.
 Don't re-add it here.
 
+**2026-10-11, third correction**: **KOBA Live is removed** — stale/old, per
+the user. Not part of this repo's active scope.
+
 The active KOBA platform scope tracked in this repo is: **KOBA Bot**,
 **KOBA Core**, **KOBA Discord App**, **KOBA PC Plugin**, **KOBA Adaptive
-Capacity**, **KOBAid**, **KOBA Creator Ecosystem**, and **KOBA Live**.
+Capacity**, **KOBAid**, and **KOBA Creator Ecosystem**.
 
 ---
 
@@ -50,23 +53,21 @@ NEW CONCRETE ARCHITECTURE (per Full_261010_215649.txt, 2026-10-10 — spec-only,
 TIER 1 — RUST RUNTIME MODULES (extend koba-pc-plugin)
   KOBA Adaptive Capacity (module inside koba-pc-plugin)
 
-TIER 2 — IDENTITY / ECONOMY / MARKETPLACE SPINE
+TIER 2 — IDENTITY / ECONOMY SPINE
   KOBAid Identity & Licensing  ──requires koba-pc-plugin for server-side validation──┐
      │        (NOTE: likely overlaps with koba-core's own koba_identities/          │
-     │         licensing tables — unreconciled, see §11)                           │
-  KOBA Creator Ecosystem (API/SDK)  ──depends on KOBAid + koba-pc-plugin──────────┤
-     │                                                                              │
-  KOBA Live (showcase/verification) ──depends on koba-pc-plugin, KOBAid, Marketplace┘
+     │         licensing tables — unreconciled, see §10)                           │
+  KOBA Creator Ecosystem (API/SDK)  ──depends on KOBAid + koba-pc-plugin──────────┘
 ```
 
 **Why split this way**: the specs themselves already describe the Rust
-runtime plugin as a single shared foundation, and KOBAid/KOBA Live as
-separate platform services with their own data models, APIs, and
-databases. Splitting along those seams matches the architecture the specs
-already assume, rather than cutting across it. KOBA Bot is scoped
-separately from all of this — it's a real, already-shipping Discord bot
-for Rust Console Edition server admins, with no current dependency on the
-koba-core/KOBAid/Live spec stack.
+runtime plugin as a single shared foundation, and KOBAid as a separate
+platform service with its own data model, API, and database. Splitting
+along those seams matches the architecture the specs already assume,
+rather than cutting across it. KOBA Bot is scoped separately from all of
+this — it's a real, already-shipping Discord bot for Rust Console
+Edition server admins, with no current dependency on the koba-core/KOBAid
+spec stack.
 
 ---
 
@@ -147,7 +148,7 @@ koba-core/KOBAid/Live spec stack.
 | | |
 |---|---|
 | **Scope** | Per `KOBAid IDENTITY_260927_221438.txt`: the permanent cross-context identity (`KOBAid`) tying together player/business/creator/server-owner/marketplace-seller profiles, plus asset identity, versioning, cryptographic manifests, rarity tiers, limited editions with DB-enforced scarcity, licensing, entitlements, server-side validation API, and anti-tampering/audit infrastructure. PostgreSQL-authoritative, Redis for ephemeral caching only. **One KOBAid per real person** (user-confirmed 2026-10-11): a user creating a business account who already has a player account uses the *same* KOBAid — account types are roles/labels on one identity, not separate IDs. |
-| **Current state** | Spec-only. No PostgreSQL schema, no identity service, no cryptographic signing service exists in any inspected repo. **Note**: KOBA Bot already has its own simpler per-Discord-account licensing model (`commands/license.js`, `commands/activate-user.js`), and the new `koba-core` web app (§3) specs its *own* `koba_identities`/`koba_linked_accounts` tables covering much of the same ground — three overlapping identity models now exist across three docs, unreconciled. See §11. |
+| **Current state** | Spec-only. No PostgreSQL schema, no identity service, no cryptographic signing service exists in any inspected repo. **Note**: KOBA Bot already has its own simpler per-Discord-account licensing model (`commands/license.js`, `commands/activate-user.js`), and the new `koba-core` web app (§3) specs its *own* `koba_identities`/`koba_linked_accounts` tables covering much of the same ground — three overlapping identity models now exist across three docs, unreconciled. See §10. |
 | **Dependencies** | Needs **KOBA PC Plugin** for the server-side validation integration point, but the identity/marketplace/licensing core can be built and tested independently first. |
 | **Roadmap outline** | Follows the spec's own phased order: 1. KOBAid generation (one per person, see above). 2. PostgreSQL schema. 3–5. Asset registry/versioning/signed manifests. 6–7. Rarity + edition scarcity (with real concurrency testing). 8–10. Licensing/purchase flow/entitlements. 11–13. Validation API + Redis cache + secure delivery. 14. KOBA PC Plugin integration. 15–18. Dashboards, audit, testing. |
 | **Suggested repo name** | `koba-identity` (or `koba-id`) |
@@ -166,19 +167,7 @@ koba-core/KOBAid/Live spec stack.
 
 ---
 
-## 10. TIER 2 — KOBA Live
-
-| | |
-|---|---|
-| **Scope** | Per `KOBA LIVE_260927_225405.txt`: the live showcase/verification/analytics platform — ProductID-driven showcase deployments, an async ingestion event pipeline, Redis live state, a camera-director service, cryptographically signed version-specific "KOBA LIVE VERIFIED" reports, creator dashboard, and full marketplace-conversion funnel analytics. Explicitly must never block or depend on by Rust gameplay. |
-| **Current state** | Spec-only. No ingestion service, director, Redis live-state schema, or verification pipeline exists. |
-| **Dependencies** | Needs **KOBA PC Plugin** (event emission), **KOBAid** (ProductID/CreatorID model it's built on), and a **Marketplace** (not separately spec'd as its own project — see §11) to actually display live showcase pages against. In practice this is the last platform piece to build. |
-| **Roadmap outline** | 1. Product/version/deployment identity model (reuses KOBAid's AssetID/ProductID pattern). 2. Core event system + async transport abstraction. 3. Ingestion service + Redis live state. 4. Director (camera scoring, anti-thrashing). 5. Capture-node/streaming integration (external). 6. Verification pipeline + signed reports. 7. Creator dashboard + analytics funnel. |
-| **Suggested repo name** | `koba-live` |
-
----
-
-## 11. What NOT to split out yet
+## 10. What NOT to split out yet
 
 - **KOBA Adaptive Capacity** — the spec explicitly describes itself as a
   *module inside the Rust plugin* (`koba-pc-plugin`), not a standalone
@@ -187,9 +176,9 @@ koba-core/KOBAid/Live spec stack.
   enough to track separately, but it likely belongs in the `koba-pc-plugin`
   repo as a module rather than as a separate repo — revisit once that
   repo's structure exists.
-- **A generic "Marketplace" project** — KOBA Live, KOBAid, and the Creator
-  Ecosystem docs all *refer to* "KOBA.GAMES Marketplace" / "the storefront"
-  as something that exists or will exist, but none of the 22 docs is itself
+- **A generic "Marketplace" project** — KOBAid and the Creator Ecosystem
+  docs both *refer to* "KOBA.GAMES Marketplace" / "the storefront" as
+  something that exists or will exist, but none of the 22 docs is itself
   a marketplace/storefront spec. Scoping a Marketplace project now would be
   inventing requirements no doc actually states. Treat it as an acknowledged
   gap, not a project, until a real marketplace spec shows up.
@@ -200,22 +189,3 @@ koba-core/KOBAid/Live spec stack.
   implementation before the user decides whether `koba-core`'s tables
   *are* the KOBAid system, a separate thing, or need merging. KOBAid's
   "one per real person" rule (§8) should apply to whichever model wins.
-
----
-
-## 12. Dropped / out-of-scope (2026-10-11)
-
-Kept as a one-line record only so the reasoning isn't lost, not as active
-scope:
-
-- **KOBA Creator Engine** (`~/Desktop/koba_creator_engine/`) — a wholly
-  separate project, not part of koba-platform. Has its own repo and its
-  own `ROADMAP.md`. Do not re-add it to this document.
-- **KOBA Building Skin System** — a Rust building-skin application system;
-  dropped as a "skins" product.
-- **KOBA Casino & Resort, KOBA Ferry Terminal, KOBA Mega Yacht / KOBA Mobile
-  Yacht, KOBA Theme Park, KOBA Quarry, KOBA MOBO, KOBA Player-Built
-  Submarine, KOBA World Events (Dragon, Dragon vs Patrol Helicopter, Spider
-  Queen, The Infection, Nightfall, Winterfest, Gold Run), KOBA Dragon's
-  Lair** — all monument/vehicle/event content products; dropped as
-  "monuments ... or things like that."
