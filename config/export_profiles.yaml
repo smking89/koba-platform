@@ -1,0 +1,63 @@
+# Optimization/export profiles. Consumed by the (not-yet-built, Phase 3)
+# optimization stage — recorded now so the schema is settled early.
+# Numbers are starting points, not verified against any specific engine yet.
+
+generic:
+  texture_resolution: 2048
+  texture_format: png
+  polygon_target: null       # no limit
+  lod_levels: [1.0, 0.5, 0.25]
+  export_formats: [fbx, glb]
+
+mobile:
+  texture_resolution: 512
+  texture_format: jpg
+  polygon_target: 5000
+  lod_levels: [1.0, 0.5]
+  export_formats: [glb]
+
+web:
+  texture_resolution: 1024
+  texture_format: webp
+  polygon_target: 15000
+  lod_levels: [1.0, 0.5]
+  export_formats: [glb]
+
+indie_game:
+  texture_resolution: 2048
+  texture_format: png
+  polygon_target: 30000
+  lod_levels: [1.0, 0.5, 0.25]
+  export_formats: [fbx, glb]
+
+AAA:
+  texture_resolution: 4096
+  texture_format: png
+  polygon_target: null
+  lod_levels: [1.0, 0.75, 0.5, 0.25, 0.1]
+  export_formats: [fbx, usd]
+
+unity:
+  texture_resolution: 2048
+  texture_format: png
+  polygon_target: 20000
+  lod_levels: [1.0, 0.5, 0.25]
+  export_formats: [fbx]
+
+unreal:
+  texture_resolution: 4096
+  texture_format: png
+  polygon_target: 40000
+  lod_levels: [1.0, 0.5, 0.25]
+  export_formats: [fbx]
+
+# NOTE on "rust": as documented in blender_asset_system/config/export_config.py,
+# there is no confirmed direct Blender->Rust/RustEdit export pipeline. This
+# profile is a placeholder that falls back to generic settings until that's
+# actually verified — don't treat these numbers as validated for Rust.
+rust:
+  texture_resolution: 2048
+  texture_format: png
+  polygon_target: 20000
+  lod_levels: [1.0, 0.5, 0.25]
+  export_formats: [fbx]

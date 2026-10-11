@@ -1,0 +1,16 @@
+# Master spec Rule 1: AI IS REPLACEABLE. This file is the single seam —
+# swapping the active provider (e.g. rule_based -> anthropic, or a future
+# openai provider) means editing this file only. Nothing in agents/,
+# tools/, orchestrator/, or the artifact graph changes.
+active_provider: rule_based
+
+providers:
+  rule_based:
+    module: ai.providers.rule_based_provider
+    class: RuleBasedProvider
+    description: Deterministic keyword-based provider. Always available, no API key, no network call.
+
+  anthropic:
+    module: ai.providers.anthropic_provider
+    class: AnthropicProvider
+    description: Real Anthropic Messages API provider. Requires ANTHROPIC_API_KEY in the environment.

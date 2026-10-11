@@ -1,0 +1,45 @@
+# Executable overrides. Leave a value empty/null to auto-detect via PATH
+# (see core/detection.py) instead of hard-coding a path here.
+#
+# Fill in `executable:` only when a tool isn't on PATH or you want to pin
+# a specific install (e.g. a portable Blender download).
+
+blender:
+  executable: /home/koba/Downloads/blender-5.2.2-linux-x64/blender
+  candidates: [blender]
+
+inkscape:
+  executable: null
+  candidates: [inkscape]
+
+gimp:
+  # Installed via Flatpak (org.gimp.GIMP), not on PATH as a plain binary —
+  # confirmed via `flatpak list` and `flatpak run org.gimp.GIMP --version`.
+  # bin/gimp-flatpak-wrapper.sh makes it invocable like a normal executable.
+  executable: bin/gimp-flatpak-wrapper.sh
+  candidates: [gimp, gimp-console]
+
+krita:
+  executable: null
+  candidates: [krita]
+
+imagemagick:
+  executable: null
+  candidates: [magick, convert]
+
+ffmpeg:
+  executable: null
+  candidates: [ffmpeg]
+
+# Optional / lower priority — see ROADMAP.md
+freecad:
+  executable: null
+  candidates: [freecad, FreeCAD]
+
+fontforge:
+  executable: null
+  candidates: [fontforge]
+
+godot:
+  executable: null
+  candidates: [godot, godot4]
